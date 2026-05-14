@@ -28,7 +28,7 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(Screen.Splash.route) { PlaceholderScreen("Splash") }
+        composable(Screen.Splash.route) { com.kelompok4.lokalmart.SmokeTestScreen() }  // TODO: ganti kembali setelah smoke test selesai
         composable(Screen.Login.route) { PlaceholderScreen("Login") }
         composable(Screen.Register.route) { PlaceholderScreen("Register") }
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
