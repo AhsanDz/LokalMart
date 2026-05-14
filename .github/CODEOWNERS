@@ -1,0 +1,30 @@
+# CODEOWNERS
+# Auto-assign reviewer berdasarkan path file yang diubah di PR.
+# Format: <pattern> <github-username-1> <github-username-2> ...
+#
+# ⚠️ TODO: ganti @ahsan-gh, @putri-gh, dst dengan username GitHub asli tiap anggota.
+# Username GitHub bukan nama lengkap — cek di profil GitHub masing-masing.
+
+# === SHARED FILES (perlu approve dari PIC repo + 1 anggota lain) ===
+/app/build.gradle.kts                                              @ahsan-gh
+/gradle/libs.versions.toml                                         @ahsan-gh
+/settings.gradle.kts                                               @ahsan-gh
+/build.gradle.kts                                                  @ahsan-gh
+/app/src/main/AndroidManifest.xml                                  @ahsan-gh
+
+# === CORE (infrastruktur shared) ===
+/app/src/main/java/com/kelompok4/lokalmart/core/                   @ahsan-gh
+/app/src/main/java/com/kelompok4/lokalmart/data/model/             @ahsan-gh
+/app/src/main/java/com/kelompok4/lokalmart/navigation/             @ahsan-gh
+
+# === PER FEATURE ===
+/app/src/main/java/com/kelompok4/lokalmart/feature/auth/           @ahsan-gh
+/app/src/main/java/com/kelompok4/lokalmart/feature/admin/          @ahsan-gh
+/app/src/main/java/com/kelompok4/lokalmart/feature/catalog/        @putri-gh
+/app/src/main/java/com/kelompok4/lokalmart/feature/store/          @mevya-gh
+/app/src/main/java/com/kelompok4/lokalmart/feature/search/         @khoiriah-gh
+/app/src/main/java/com/kelompok4/lokalmart/feature/checkout/       @muna-gh
+/app/src/main/java/com/kelompok4/lokalmart/feature/review/         @febrian-gh
+
+# === DOCS ===
+*.md                                                                @ahsan-gh
