@@ -12,12 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.kelompok4.lokalmart.feature.auth.ui.LoginScreen
+import com.kelompok4.lokalmart.feature.auth.ui.RegisterScreen
+import com.kelompok4.lokalmart.feature.auth.ui.SplashScreen
 
 /**
  * NavHost utama aplikasi.
  *
  * Setiap anggota tambahkan composable() untuk screen-nya masing-masing.
- * Sementara placeholder dulu — diganti dengan Composable beneran nanti.
  */
 @Composable
 fun AppNavHost(
@@ -28,10 +30,49 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(Screen.Splash.route) { PlaceholderScreen("Splash") }
-        composable(Screen.Login.route) { PlaceholderScreen("Login") }
-        composable(Screen.Register.route) { PlaceholderScreen("Register") }
+        // ===== Auth (Ahsan) =====
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onNavigateToLogin = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.Login.route) {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(Screen.Register.route)
+                }
+            )
+        }
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // ===== Home (placeholder, akan diganti dengan katalog fitur Putri) =====
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
+
         // TODO: anggota lain tambahkan composable() screen-nya di sini.
     }
 }
