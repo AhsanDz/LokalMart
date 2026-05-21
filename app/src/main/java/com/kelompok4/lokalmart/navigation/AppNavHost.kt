@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.kelompok4.lokalmart.feature.checkout.ui.OrderTrackingScreen
 
 /**
  * NavHost utama aplikasi.
@@ -33,6 +34,13 @@ fun AppNavHost(
         composable(Screen.Register.route) { PlaceholderScreen("Register") }
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
         // TODO: anggota lain tambahkan composable() screen-nya di sini.
+
+        composable("orders") {
+            OrderTrackingScreen(
+                navController = navController,
+                buyerId = ""
+            )
+        }
     }
 }
 
