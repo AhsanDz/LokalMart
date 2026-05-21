@@ -100,12 +100,10 @@ fun RegisterScreen(
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             StepDot(active = true)
-            StepDot(active = false)
-            StepDot(active = false)
         }
 
         Text(
-            text = "Langkah 1 dari 3 · Data akun",
+            text = "Data akun",
             fontSize = 11.sp,
             color = Color(0xFF64748B),
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
