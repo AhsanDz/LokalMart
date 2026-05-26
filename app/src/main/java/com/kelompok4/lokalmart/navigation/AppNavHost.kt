@@ -16,6 +16,7 @@ import com.kelompok4.lokalmart.feature.auth.ui.LoginScreen
 import com.kelompok4.lokalmart.feature.auth.ui.RegisterScreen
 import com.kelompok4.lokalmart.feature.auth.ui.SplashScreen
 import com.kelompok4.lokalmart.feature.checkout.ui.OrderTrackingScreen
+import com.kelompok4.lokalmart.feature.search.ui.SearchScreen  // pastikan package ini benar
 
 /**
  * NavHost utama aplikasi.
@@ -74,6 +75,25 @@ fun AppNavHost(
 
         // ===== Home (placeholder, akan diganti dengan katalog fitur Putri) =====
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
+
+        // ── Search & Cart (Khoiriah) ──────────────────────────────────────
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onProductClick = { productId: String ->
+                    navController.navigate(Screen.ProductDetail.create(productId))
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Cart menyusul setelah CartScreen selesai dibuat
+        // composable(Screen.Cart.route) {
+        //     CartScreen(
+        //         onCheckoutClick = { navController.navigate(Screen.Checkout.route) },
+        //         onNavigateBack = { navController.popBackStack() }
+        //     )
+        // }
+        // ── End Search & Cart (Khoiriah) ──────────────────────────────────
 
         // ===== Checkout (Muna) =====
         composable("orders") {
