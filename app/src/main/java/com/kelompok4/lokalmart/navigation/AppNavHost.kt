@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.kelompok4.lokalmart.feature.checkout.ui.OrderTrackingScreen
+import com.kelompok4.lokalmart.feature.search.ui.SearchScreen  // pastikan package ini benar
 
 /**
  * NavHost utama aplikasi.
@@ -34,6 +35,25 @@ fun AppNavHost(
         composable(Screen.Register.route) { PlaceholderScreen("Register") }
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
         // TODO: anggota lain tambahkan composable() screen-nya di sini.
+
+        // ── Search & Cart (Khoiriah) ──────────────────────────────────────
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onProductClick = { productId: String ->
+                    navController.navigate(Screen.ProductDetail.create(productId))
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Cart menyusul setelah CartScreen selesai dibuat
+        // composable(Screen.Cart.route) {
+        //     CartScreen(
+        //         onCheckoutClick = { navController.navigate(Screen.Checkout.route) },
+        //         onNavigateBack = { navController.popBackStack() }
+        //     )
+        // }
+        // ── End Search & Cart (Khoiriah) ──────────────────────────────────
 
         composable("orders") {
             OrderTrackingScreen(
