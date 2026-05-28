@@ -23,11 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
+import androidx.compose.material3.Text
 import com.kelompok4.lokalmart.core.common.theme.Green600
 import com.kelompok4.lokalmart.core.common.theme.Green700
 import com.kelompok4.lokalmart.feature.auth.viewmodel.AuthViewModel
-import kotlinx.coroutines.delay
-import androidx.compose.material3.Text
 
 @Composable
 fun SplashScreen(

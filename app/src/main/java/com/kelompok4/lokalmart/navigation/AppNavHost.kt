@@ -16,7 +16,8 @@ import com.kelompok4.lokalmart.feature.auth.ui.LoginScreen
 import com.kelompok4.lokalmart.feature.auth.ui.RegisterScreen
 import com.kelompok4.lokalmart.feature.auth.ui.SplashScreen
 import com.kelompok4.lokalmart.feature.checkout.ui.OrderTrackingScreen
-import com.kelompok4.lokalmart.feature.search.ui.SearchScreen  // pastikan package ini benar
+import com.kelompok4.lokalmart.feature.search.ui.SearchScreen
+import com.kelompok4.lokalmart.feature.store.ui.StoreScreen
 
 /**
  * NavHost utama aplikasi.
@@ -27,7 +28,7 @@ import com.kelompok4.lokalmart.feature.search.ui.SearchScreen  // pastikan packa
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    startDestination: String = Screen.Splash.route
+    startDestination: String = Screen.Store.route
 ) {
     NavHost(
         navController = navController,
@@ -71,6 +72,24 @@ fun AppNavHost(
                     navController.popBackStack()
                 }
             )
+        }
+
+        //FITUR STOREEEE
+        composable(Screen.Store.route) {
+            StoreScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateNext = {
+                    navController.navigate(Screen.MyStore.route) {
+                        popUpTo(Screen.Store.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.MyStore.route) {
+            PlaceholderScreen("Dashboard Toko Saya (MyStore)")
         }
 
         // ===== Home (placeholder, akan diganti dengan katalog fitur Putri) =====
