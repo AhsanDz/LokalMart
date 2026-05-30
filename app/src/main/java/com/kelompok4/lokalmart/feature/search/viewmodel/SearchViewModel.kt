@@ -19,15 +19,23 @@ data class SearchUiState(
     val error: String? = null,
     val totalResults: Int = 0,
 
-    // Filter state
+    // ── Filter APPLIED ────────────────────────────────────────────────────────
     val selectedCategory: String? = null,
     val minPrice: Double? = null,
     val maxPrice: Double? = null,
     val selectedLocation: String? = null,
+    val radiusKm: Int? = null,
     val sortBy: SortOption = SortOption.TERLARIS,
-    val showFilterSheet: Boolean = false,
 
-    // UI helper
+    // ── Filter DRAFT (saat sheet terbuka) ─────────────────────────────────────
+    val draftCategory: String? = null,
+    val draftMinPrice: Double? = null,
+    val draftMaxPrice: Double? = null,
+    val draftLocation: String? = null,
+    val draftRadiusKm: Int? = null,
+    val draftSortBy: SortOption = SortOption.TERLARIS,
+
+    val showFilterSheet: Boolean = false,
     val hasSearched: Boolean = false
 )
 
@@ -42,7 +50,6 @@ class SearchViewModel @Inject constructor(
 
     val categories: List<String> = repository.categories
 
-    // Debounce search saat user mengetik
     private val _queryFlow = MutableStateFlow("")
 
     init {
@@ -56,52 +63,95 @@ class SearchViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    // ── Query ─────────────────────────────────────────────────────────────────
     fun onQueryChange(query: String) {
         _uiState.update { it.copy(query = query) }
         _queryFlow.value = query
     }
 
-    fun onSearch() {
-        performSearch(_uiState.value.query)
-    }
+    fun onSearch() { performSearch(_uiState.value.query) }
 
     fun clearQuery() {
         _uiState.update { it.copy(query = "", results = emptyList(), hasSearched = false, error = null) }
         _queryFlow.value = ""
     }
 
-    fun onCategorySelected(category: String?) {
-        _uiState.update { it.copy(selectedCategory = category) }
+    // ── Sheet: buka → salin applied ke draft ─────────────────────────────────
+    fun openFilterSheet() {
+        _uiState.update {
+            it.copy(
+                showFilterSheet = true,
+                draftCategory   = it.selectedCategory,
+                draftMinPrice   = it.minPrice,
+                draftMaxPrice   = it.maxPrice,
+                draftLocation   = it.selectedLocation,
+                draftRadiusKm   = it.radiusKm,
+                draftSortBy     = it.sortBy,
+            )
+        }
+    }
+
+    // ── Sheet: tutup tanpa apply ──────────────────────────────────────────────
+    fun dismissFilterSheet() {
+        _uiState.update { it.copy(showFilterSheet = false) }
+    }
+
+    // ── Draft setters ─────────────────────────────────────────────────────────
+    fun onDraftCategorySelected(category: String?) =
+        _uiState.update { it.copy(draftCategory = category) }
+
+    fun onDraftPriceRangeSelected(min: Double?, max: Double?) =
+        _uiState.update { it.copy(draftMinPrice = min, draftMaxPrice = max) }
+
+    fun onDraftLocationSelected(location: String?) =
+        _uiState.update { it.copy(draftLocation = location) }
+
+    fun onDraftRadiusSelected(radius: Int?) =
+        _uiState.update { it.copy(draftRadiusKm = radius) }
+
+    fun onDraftSortSelected(sort: SortOption) =
+        _uiState.update { it.copy(draftSortBy = sort) }
+
+    // ── Terapkan: draft → applied, lalu search ────────────────────────────────
+    fun applyFilters() {
+        _uiState.update {
+            it.copy(
+                showFilterSheet  = false,
+                selectedCategory = it.draftCategory,
+                minPrice         = it.draftMinPrice,
+                maxPrice         = it.draftMaxPrice,
+                selectedLocation = it.draftLocation,
+                radiusKm         = it.draftRadiusKm,
+                sortBy           = it.draftSortBy,
+            )
+        }
         performSearch(_uiState.value.query)
     }
 
-    fun onPriceRangeSelected(min: Double?, max: Double?) {
-        _uiState.update { it.copy(minPrice = min, maxPrice = max) }
-        performSearch(_uiState.value.query)
+    // ── Reset draft ───────────────────────────────────────────────────────────
+    fun resetDraftFilters() {
+        _uiState.update {
+            it.copy(
+                draftCategory = null,
+                draftMinPrice = null,
+                draftMaxPrice = null,
+                draftLocation = null,
+                draftRadiusKm = null,
+                draftSortBy   = SortOption.TERLARIS,
+            )
+        }
     }
 
-    fun onLocationSelected(location: String?) {
-        _uiState.update { it.copy(selectedLocation = location) }
-        performSearch(_uiState.value.query)
-    }
-
-    fun onSortSelected(sort: SortOption) {
-        _uiState.update { it.copy(sortBy = sort) }
-        performSearch(_uiState.value.query)
-    }
-
-    fun toggleFilterSheet() {
-        _uiState.update { it.copy(showFilterSheet = !it.showFilterSheet) }
-    }
-
+    // ── Clear semua applied dari luar sheet ───────────────────────────────────
     fun clearAllFilters() {
         _uiState.update {
             it.copy(
                 selectedCategory = null,
-                minPrice = null,
-                maxPrice = null,
+                minPrice         = null,
+                maxPrice         = null,
                 selectedLocation = null,
-                sortBy = SortOption.TERLARIS
+                radiusKm         = null,
+                sortBy           = SortOption.TERLARIS,
             )
         }
         performSearch(_uiState.value.query)
@@ -111,12 +161,12 @@ class SearchViewModel @Inject constructor(
         val state = _uiState.value
         viewModelScope.launch {
             repository.searchProducts(
-                query = query,
+                query    = query,
                 category = state.selectedCategory,
                 minPrice = state.minPrice,
                 maxPrice = state.maxPrice,
                 location = state.selectedLocation,
-                sortBy = state.sortBy
+                sortBy   = state.sortBy
             ).collect { resource ->
                 when (resource) {
                     Resource.Loading -> _uiState.update {
@@ -124,10 +174,10 @@ class SearchViewModel @Inject constructor(
                     }
                     is Resource.Success -> _uiState.update {
                         it.copy(
-                            isLoading = false,
-                            results = resource.data,
+                            isLoading    = false,
+                            results      = resource.data,
                             totalResults = resource.data.size,
-                            hasSearched = true
+                            hasSearched  = true
                         )
                     }
                     is Resource.Error -> _uiState.update {
