@@ -2,6 +2,7 @@ package com.kelompok4.lokalmart.feature.auth.data
 
 import android.util.Log
 import com.kelompok4.lokalmart.core.network.SupabaseTables
+import com.kelompok4.lokalmart.core.util.Resource
 import com.kelompok4.lokalmart.data.model.User
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
@@ -101,6 +102,58 @@ class AuthRepository @Inject constructor(
                 filter { eq("id", userId) }
             }
             .decodeSingleOrNull<User>()
+    }
+
+    /**
+     * Update profil user (nama, HP, bio) di tabel `profiles`.
+     */
+    suspend fun updateProfile(
+        fullName: String,
+        phone: String?,
+        bio: String?
+    ): Resource<Unit> {
+        return try {
+            val userId = currentUserId()
+                ?: return Resource.Error("User belum login")
+            supabase.postgrest
+                .from(SupabaseTables.PROFILES)
+                .update(
+                    {
+                        set("full_name", fullName)
+                        set("phone", phone)
+                        set("bio", bio)
+                    }
+                ) {
+                    filter { eq("id", userId) }
+                }
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Gagal update profil", e)
+            Resource.Error(e.message ?: "Gagal menyimpan profil")
+        }
+    }
+
+    /**
+     * Update avatar URL di tabel `profiles`.
+     */
+    suspend fun updateAvatar(avatarUrl: String): Resource<Unit> {
+        return try {
+            val userId = currentUserId()
+                ?: return Resource.Error("User belum login")
+            supabase.postgrest
+                .from(SupabaseTables.PROFILES)
+                .update(
+                    {
+                        set("avatar_url", avatarUrl)
+                    }
+                ) {
+                    filter { eq("id", userId) }
+                }
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Gagal update avatar", e)
+            Resource.Error(e.message ?: "Gagal menyimpan avatar")
+        }
     }
 
     companion object {
