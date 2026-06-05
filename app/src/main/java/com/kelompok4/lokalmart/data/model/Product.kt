@@ -21,7 +21,12 @@ data class Product(
     val stock: Int = 0,
     val variant: String? = null,
     @SerialName("is_active") val isActive: Boolean = true,
-    @SerialName("created_at") val createdAt: String? = null
+    @SerialName("created_at") val createdAt: String? = null,
+    // ── Field tambahan untuk Search & Cart ──────────────────────────────────
+    @SerialName("image_url") val imageUrl: String? = null,
+    @SerialName("store_name") val storeName: String? = null,
+    val rating: Float = 0f,
+    @SerialName("sold_count") val soldCount: Int = 0
 )
 
 @Serializable

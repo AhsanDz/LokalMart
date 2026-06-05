@@ -12,10 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.kelompok4.lokalmart.feature.auth.ui.LoginScreen
-import com.kelompok4.lokalmart.feature.auth.ui.RegisterScreen
-import com.kelompok4.lokalmart.feature.auth.ui.SplashScreen
 import com.kelompok4.lokalmart.feature.checkout.ui.OrderTrackingScreen
+import com.kelompok4.lokalmart.feature.search.ui.SearchScreen  // pastikan package ini benar
 
 /**
  * NavHost utama aplikasi.
@@ -32,58 +30,37 @@ fun AppNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        // ===== Auth (Ahsan) =====
-        composable(Screen.Splash.route) {
-            SplashScreen(
-                onNavigateToLogin = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
-                },
-                onNavigateToHome = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
-                }
-            )
-        }
-        composable(Screen.Login.route) {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                },
-                onNavigateToRegister = {
-                    navController.navigate(Screen.Register.route)
-                }
-            )
-        }
-        composable(Screen.Register.route) {
-            RegisterScreen(
-                onRegisterSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
-                },
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        // ===== Home (placeholder, akan diganti dengan katalog fitur Putri) =====
+        composable(Screen.Splash.route) { PlaceholderScreen("Splash") }
+        composable(Screen.Login.route) { PlaceholderScreen("Login") }
+        composable(Screen.Register.route) { PlaceholderScreen("Register") }
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
+        // TODO: anggota lain tambahkan composable() screen-nya di sini.
 
-        // ===== Checkout (Muna) =====
+        // ── Search & Cart (Khoiriah) ──────────────────────────────────────
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onProductClick = { productId: String ->
+                    navController.navigate(Screen.ProductDetail.create(productId))
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Cart menyusul setelah CartScreen selesai dibuat
+        // composable(Screen.Cart.route) {
+        //     CartScreen(
+        //         onCheckoutClick = { navController.navigate(Screen.Checkout.route) },
+        //         onNavigateBack = { navController.popBackStack() }
+        //     )
+        // }
+        // ── End Search & Cart (Khoiriah) ──────────────────────────────────
+
         composable("orders") {
             OrderTrackingScreen(
                 navController = navController,
                 buyerId = ""
             )
         }
-
-        // TODO: anggota lain tambahkan composable() screen-nya di sini.
     }
 }
 
