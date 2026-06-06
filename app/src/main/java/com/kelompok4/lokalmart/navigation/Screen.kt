@@ -24,7 +24,7 @@ sealed class Screen(val route: String) {
     }
 
     // Store (Mevya)
-    data object StoreRegister : Screen("store_register")
+    data object Store : Screen("Store")
     data object MyStore : Screen("my_store")
     data object StoreProfile : Screen("store_profile/{storeId}") {
         fun create(storeId: String) = "store_profile/$storeId"

@@ -20,6 +20,8 @@ import com.kelompok4.lokalmart.feature.auth.ui.SplashScreen
 import com.kelompok4.lokalmart.feature.checkout.ui.CheckoutScreen
 import com.kelompok4.lokalmart.feature.checkout.ui.OrderTrackingScreen
 import com.kelompok4.lokalmart.feature.checkout.ui.PaymentScreen
+import com.kelompok4.lokalmart.feature.search.ui.SearchScreen
+import com.kelompok4.lokalmart.feature.store.ui.StoreScreen
 
 @Composable
 fun AppNavHost(
@@ -73,18 +75,35 @@ fun AppNavHost(
         // ===== Home =====
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
 
+        // ===== Store (Mevya) =====
+        composable(Screen.Store.route) {
+            StoreScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateNext = {
+                    navController.navigate(Screen.MyStore.route) {
+                        popUpTo(Screen.Store.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.MyStore.route) {
+            PlaceholderScreen("Dashboard Toko Saya (MyStore)")
+        }
+
         // ===== Catalog (Putri) =====
         composable(Screen.ProductDetail.route) { PlaceholderScreen("Product Detail") }
 
-        // ===== Store (Mevya) =====
-        composable(Screen.StoreRegister.route) { PlaceholderScreen("Store Register") }
-        composable(Screen.MyStore.route) { PlaceholderScreen("My Store") }
-        composable(Screen.StoreProfile.route) { PlaceholderScreen("Store Profile") }
-        composable(Screen.AddProduct.route) { PlaceholderScreen("Add Product") }
-        composable(Screen.EditProduct.route) { PlaceholderScreen("Edit Product") }
-
         // ===== Search & Cart (Khoiriah) =====
-        composable(Screen.Search.route) { PlaceholderScreen("Search") }
+        composable(Screen.Search.route) {
+            SearchScreen(
+                onProductClick = { productId: String ->
+                    navController.navigate(Screen.ProductDetail.create(productId))
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
         composable(Screen.Cart.route) { PlaceholderScreen("Cart") }
 
         // ===== Checkout & Order (Muna) =====

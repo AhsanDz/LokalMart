@@ -47,6 +47,7 @@ import com.kelompok4.lokalmart.core.common.components.LokalMartTextField
 import com.kelompok4.lokalmart.core.common.theme.Green600
 import com.kelompok4.lokalmart.feature.auth.viewmodel.AuthViewModel
 
+
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
