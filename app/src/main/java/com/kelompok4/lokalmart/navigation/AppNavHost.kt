@@ -10,19 +10,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.kelompok4.lokalmart.feature.auth.ui.LoginScreen
 import com.kelompok4.lokalmart.feature.auth.ui.RegisterScreen
 import com.kelompok4.lokalmart.feature.auth.ui.SplashScreen
+import com.kelompok4.lokalmart.feature.checkout.ui.CheckoutScreen
 import com.kelompok4.lokalmart.feature.checkout.ui.OrderTrackingScreen
+import com.kelompok4.lokalmart.feature.checkout.ui.PaymentScreen
 
-/**
- * NavHost utama aplikasi.
- *
- * Setiap anggota tambahkan composable() untuk screen-nya masing-masing.
- * Sementara placeholder dulu — diganti dengan Composable beneran nanti.
- */
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -72,25 +70,76 @@ fun AppNavHost(
             )
         }
 
-        // ===== Home (placeholder, akan diganti dengan katalog fitur Putri) =====
+        // ===== Home =====
         composable(Screen.Home.route) { PlaceholderScreen("Home") }
 
-        // ===== Checkout (Muna) =====
-        composable("orders") {
+        // ===== Catalog (Putri) =====
+        composable(Screen.ProductDetail.route) { PlaceholderScreen("Product Detail") }
+
+        // ===== Store (Mevya) =====
+        composable(Screen.StoreRegister.route) { PlaceholderScreen("Store Register") }
+        composable(Screen.MyStore.route) { PlaceholderScreen("My Store") }
+        composable(Screen.StoreProfile.route) { PlaceholderScreen("Store Profile") }
+        composable(Screen.AddProduct.route) { PlaceholderScreen("Add Product") }
+        composable(Screen.EditProduct.route) { PlaceholderScreen("Edit Product") }
+
+        // ===== Search & Cart (Khoiriah) =====
+        composable(Screen.Search.route) { PlaceholderScreen("Search") }
+        composable(Screen.Cart.route) { PlaceholderScreen("Cart") }
+
+        // ===== Checkout & Order (Muna) =====
+        composable(Screen.Checkout.route) {
+            CheckoutScreen(
+                navController = navController,
+                buyerId = "",
+                storeId = "",
+                items = emptyList(),
+                totalPrice = 0.0
+            )
+        }
+        composable(Screen.OrderHistory.route) {
             OrderTrackingScreen(
                 navController = navController,
                 buyerId = ""
             )
         }
+        composable(
+            route = Screen.OrderDetail.route,
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            PaymentScreen(
+                navController = navController,
+                orderId = orderId,
+                method = "qris",
+                amount = 0.0
+            )
+        }
 
-        // TODO: anggota lain tambahkan composable() screen-nya di sini.
+        // ===== Review & Dashboard (Febrian) =====
+        composable(Screen.SellerDashboard.route) { PlaceholderScreen("Seller Dashboard") }
+        composable(
+            route = Screen.ReviewForm.route,
+            arguments = listOf(
+                navArgument("orderId") { type = NavType.StringType },
+                navArgument("productId") { type = NavType.StringType }
+            )
+        ) { PlaceholderScreen("Review Form") }
+
+        // ===== Admin (Ahsan) =====
+        composable(Screen.AdminPanel.route) { PlaceholderScreen("Admin Panel") }
+        composable(Screen.AdminStoreVerification.route) { PlaceholderScreen("Admin Store Verification") }
+        composable(Screen.AdminProductList.route) { PlaceholderScreen("Admin Product List") }
+        composable(Screen.AdminUserList.route) { PlaceholderScreen("Admin User List") }
     }
 }
 
 @Composable
 private fun PlaceholderScreen(name: String) {
     Box(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
