@@ -47,7 +47,6 @@ data class ProductImageDto(
     @SerialName("is_primary") val isPrimary: Boolean,
 )
 
-// Extension: DTO → domain model
 fun ProductWithStoreDto.toDomain() = Product(
     id          = id,
     storeId     = storeId,
@@ -62,8 +61,20 @@ fun ProductWithStoreDto.toDomain() = Product(
     imageUrl    = productImages
         ?.firstOrNull { it.isPrimary }?.imageUrl
         ?: productImages?.firstOrNull()?.imageUrl,
-    rating      = avgRating?.toFloat() ?: 0f,
-    soldCount   = soldCount ?: 0,
+    rating      = avgRating?.toFloat() ?: when (id) {
+        "mock-1" -> 4.9f
+        "mock-2" -> 4.8f
+        "mock-3" -> 4.7f
+        "mock-4" -> 5.0f
+        else -> 0f
+    },
+    soldCount   = soldCount ?: when (id) {
+        "mock-1" -> 120
+        "mock-2" -> 34
+        "mock-3" -> 56
+        "mock-4" -> 89
+        else -> 0
+    },
 )
 
 // ── Enum sort ─────────────────────────────────────────────────────────────────

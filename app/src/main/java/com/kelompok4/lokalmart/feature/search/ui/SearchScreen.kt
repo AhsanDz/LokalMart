@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kelompok4.lokalmart.data.model.Product
+import com.kelompok4.lokalmart.feature.catalog.ui.BuyerBottomNavigation
 import com.kelompok4.lokalmart.feature.search.data.SortOption
 import com.kelompok4.lokalmart.feature.search.viewmodel.SearchViewModel
 
@@ -30,18 +31,36 @@ import com.kelompok4.lokalmart.feature.search.viewmodel.SearchViewModel
 fun SearchScreen(
     onProductClick: (String) -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToCart: () -> Unit = {},
+    onNavigateToOrders: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    Scaffold(containerColor = Color.White) { padding ->
+    Scaffold(
+        containerColor = Color.White,
+        bottomBar = {
+            BuyerBottomNavigation(
+                activeTab = "Cari",
+                onTabClick = { tab ->
+                    when (tab) {
+                        "Beranda" -> onNavigateToHome()
+                        "Keranjang" -> onNavigateToCart()
+                        "Pesanan" -> onNavigateToOrders()
+                        "Profil" -> onNavigateToProfile()
+                    }
+                }
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .statusBarsPadding()
         ) {
             SearchTopBar(
                 query          = uiState.query,

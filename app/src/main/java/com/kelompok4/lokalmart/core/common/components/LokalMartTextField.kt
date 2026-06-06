@@ -51,6 +51,9 @@ fun LokalMartTextField(
         isError = isError,
         textStyle = MaterialTheme.typography.bodyMedium,
         colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = Color(0xFF0F172A),
+            unfocusedTextColor = Color(0xFF0F172A),
+            disabledTextColor = Color(0xFF64748B),
             focusedBorderColor = Green600,
             unfocusedBorderColor = Color(0xFFE2E8F0),
             disabledBorderColor = Color(0xFFE2E8F0),

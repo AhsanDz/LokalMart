@@ -149,6 +149,18 @@ class CartViewModel @Inject constructor(
         }
     }
 
+    fun toggleStoreSelection(storeName: String) {
+        _uiState.update { state ->
+            val storeItems = state.items.filter { it.storeName == storeName }
+            val allSelected = storeItems.all { it.isSelected }
+            state.copy(
+                items = state.items.map {
+                    if (it.storeName == storeName) it.copy(isSelected = !allSelected) else it
+                }
+            ).recalculate()
+        }
+    }
+
     fun selectAll() {
         _uiState.update { state ->
             val allSelected = state.items.all { it.isSelected }

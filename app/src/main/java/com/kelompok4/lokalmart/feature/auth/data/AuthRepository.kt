@@ -103,6 +103,50 @@ class AuthRepository @Inject constructor(
             .decodeSingleOrNull<User>()
     }
 
+    /**
+     * Mengupdate data profil pengguna.
+     */
+    suspend fun updateProfile(
+        fullName: String,
+        phone: String?,
+        bio: String?,
+        avatarUrl: String?
+    ): User? {
+        val userId = currentUserId() ?: return null
+        return supabase.postgrest
+            .from(SupabaseTables.PROFILES)
+            .update(
+                {
+                    set("full_name", fullName)
+                    set("phone", phone)
+                    set("bio", bio)
+                    set("avatar_url", avatarUrl)
+                }
+            ) {
+                filter { eq("id", userId) }
+                select()
+            }
+            .decodeSingleOrNull<User>()
+    }
+
+    /**
+     * Mengupdate role pengguna (misal dari buyer ke seller saat membuka toko).
+     */
+    suspend fun updateRole(role: String): User? {
+        val userId = currentUserId() ?: return null
+        return supabase.postgrest
+            .from(SupabaseTables.PROFILES)
+            .update(
+                {
+                    set("role", role)
+                }
+            ) {
+                filter { eq("id", userId) }
+                select()
+            }
+            .decodeSingleOrNull<User>()
+    }
+
     companion object {
         private const val TAG = "AuthRepository"
     }
