@@ -216,7 +216,12 @@ fun AddProductScreen(
                             placeholder = { Text("Masukkan nama produk") },
                             singleLine = true,
                             shape = RoundedCornerShape(10.dp),
+                            textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color(0xFF0F172A),
+                                unfocusedTextColor = Color(0xFF0F172A),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
                                 focusedBorderColor = GreenPrimary,
                                 unfocusedBorderColor = BorderColor
                             ),
@@ -249,7 +254,12 @@ fun AddProductScreen(
                                     )
                                 },
                                 shape = RoundedCornerShape(10.dp),
+                                textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                                 colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color(0xFF0F172A),
+                                    unfocusedTextColor = Color(0xFF0F172A),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
                                     focusedBorderColor = GreenPrimary,
                                     unfocusedBorderColor = BorderColor
                                 ),
@@ -264,7 +274,7 @@ fun AddProductScreen(
                             ) {
                                 categoriesList.forEach { (catId, catName) ->
                                     DropdownMenuItem(
-                                        text = { Text(catName) },
+                                        text = { Text(catName, color = Color(0xFF0F172A)) },
                                         onClick = {
                                             selectedCategoryName = catName
                                             selectedCategoryId = catId
@@ -292,7 +302,12 @@ fun AddProductScreen(
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(10.dp),
+                            textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color(0xFF0F172A),
+                                unfocusedTextColor = Color(0xFF0F172A),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
                                 focusedBorderColor = GreenPrimary,
                                 unfocusedBorderColor = BorderColor
                             ),
@@ -316,7 +331,12 @@ fun AddProductScreen(
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             shape = RoundedCornerShape(10.dp),
+                            textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color(0xFF0F172A),
+                                unfocusedTextColor = Color(0xFF0F172A),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
                                 focusedBorderColor = GreenPrimary,
                                 unfocusedBorderColor = BorderColor
                             ),
@@ -339,7 +359,12 @@ fun AddProductScreen(
                             placeholder = { Text("Contoh: Natural, Cokelat, Hitam") },
                             singleLine = true,
                             shape = RoundedCornerShape(10.dp),
+                            textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color(0xFF0F172A),
+                                unfocusedTextColor = Color(0xFF0F172A),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
                                 focusedBorderColor = GreenPrimary,
                                 unfocusedBorderColor = BorderColor
                             ),
@@ -363,7 +388,12 @@ fun AddProductScreen(
                             minLines = 3,
                             maxLines = 5,
                             shape = RoundedCornerShape(10.dp),
+                            textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color(0xFF0F172A),
+                                unfocusedTextColor = Color(0xFF0F172A),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
                                 focusedBorderColor = GreenPrimary,
                                 unfocusedBorderColor = BorderColor
                             ),

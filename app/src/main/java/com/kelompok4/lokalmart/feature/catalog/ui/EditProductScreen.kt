@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -255,7 +256,12 @@ fun EditProductScreen(
                                 placeholder = { Text("Masukkan nama produk") },
                                 singleLine = true,
                                 shape = RoundedCornerShape(10.dp),
+                                textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                                 colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color(0xFF0F172A),
+                                    unfocusedTextColor = Color(0xFF0F172A),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
                                     focusedBorderColor = GreenPrimary,
                                     unfocusedBorderColor = BorderColor
                                 ),
@@ -288,7 +294,12 @@ fun EditProductScreen(
                                         )
                                     },
                                     shape = RoundedCornerShape(10.dp),
+                                    textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                                     colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = Color(0xFF0F172A),
+                                        unfocusedTextColor = Color(0xFF0F172A),
+                                        focusedContainerColor = Color.White,
+                                        unfocusedContainerColor = Color.White,
                                         focusedBorderColor = GreenPrimary,
                                         unfocusedBorderColor = BorderColor
                                     ),
@@ -303,7 +314,7 @@ fun EditProductScreen(
                                 ) {
                                     categoriesList.forEach { (catId, catName) ->
                                         DropdownMenuItem(
-                                            text = { Text(catName) },
+                                            text = { Text(catName, color = Color(0xFF0F172A)) },
                                             onClick = {
                                                 selectedCategoryName = catName
                                                 selectedCategoryId = catId
@@ -331,7 +342,12 @@ fun EditProductScreen(
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 shape = RoundedCornerShape(10.dp),
+                                textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                                 colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color(0xFF0F172A),
+                                    unfocusedTextColor = Color(0xFF0F172A),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
                                     focusedBorderColor = GreenPrimary,
                                     unfocusedBorderColor = BorderColor
                                 ),
@@ -355,7 +371,12 @@ fun EditProductScreen(
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 shape = RoundedCornerShape(10.dp),
+                                textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                                 colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color(0xFF0F172A),
+                                    unfocusedTextColor = Color(0xFF0F172A),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
                                     focusedBorderColor = GreenPrimary,
                                     unfocusedBorderColor = BorderColor
                                 ),
@@ -378,7 +399,12 @@ fun EditProductScreen(
                                 placeholder = { Text("Contoh: Natural, Cokelat, Hitam") },
                                 singleLine = true,
                                 shape = RoundedCornerShape(10.dp),
+                                textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                                 colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color(0xFF0F172A),
+                                    unfocusedTextColor = Color(0xFF0F172A),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
                                     focusedBorderColor = GreenPrimary,
                                     unfocusedBorderColor = BorderColor
                                 ),
@@ -402,7 +428,12 @@ fun EditProductScreen(
                                 minLines = 3,
                                 maxLines = 5,
                                 shape = RoundedCornerShape(10.dp),
+                                textStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp),
                                 colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = Color(0xFF0F172A),
+                                    unfocusedTextColor = Color(0xFF0F172A),
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
                                     focusedBorderColor = GreenPrimary,
                                     unfocusedBorderColor = BorderColor
                                 ),

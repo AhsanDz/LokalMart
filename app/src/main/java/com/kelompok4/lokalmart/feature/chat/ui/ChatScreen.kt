@@ -93,7 +93,10 @@ fun ChatScreen(
                     .padding(horizontal = 16.dp, vertical = 12.dp)
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
+                textStyle = androidx.compose.ui.text.TextStyle(color = Color(0xFF0F172A), fontSize = 13.sp),
                 colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color(0xFF0F172A),
+                    unfocusedTextColor = Color(0xFF0F172A),
                     focusedBorderColor = GreenPrimary,
                     unfocusedBorderColor = BorderColor,
                     focusedContainerColor = Color(0xFFF1F5F9),

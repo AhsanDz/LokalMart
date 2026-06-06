@@ -377,11 +377,13 @@ fun StoreTextField(
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             shape           = RoundedCornerShape(10.dp),
             colors          = OutlinedTextFieldDefaults.colors(
+                focusedTextColor     = TextPrimary,
+                unfocusedTextColor   = TextPrimary,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
                 focusedBorderColor   = GreenPrimary,
                 unfocusedBorderColor = BorderColor,
-                errorBorderColor     = ErrorColor,
-                focusedTextColor     = TextPrimary,
-                unfocusedTextColor   = TextPrimary
+                errorBorderColor     = ErrorColor
             ),
             textStyle = TextStyle(fontSize = 14.sp, color = TextPrimary),
             modifier  = Modifier.fillMaxWidth()
@@ -429,11 +431,13 @@ private fun StoreKategoriDropdown(
                 isError   = errorMessage != null,
                 shape     = RoundedCornerShape(10.dp),
                 colors    = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor     = TextPrimary,
+                    unfocusedTextColor   = TextPrimary,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
                     focusedBorderColor   = GreenPrimary,
                     unfocusedBorderColor = BorderColor,
-                    errorBorderColor     = ErrorColor,
-                    focusedTextColor     = TextPrimary,
-                    unfocusedTextColor   = TextPrimary
+                    errorBorderColor     = ErrorColor
                 ),
                 textStyle = TextStyle(fontSize = 14.sp, color = TextPrimary),
                 modifier  = Modifier
@@ -492,10 +496,12 @@ private fun StoreDeskripsiField(
             maxLines  = 5,
             shape     = RoundedCornerShape(10.dp),
             colors    = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor   = GreenPrimary,
-                unfocusedBorderColor = BorderColor,
                 focusedTextColor     = TextPrimary,
-                unfocusedTextColor   = TextPrimary
+                unfocusedTextColor   = TextPrimary,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor   = GreenPrimary,
+                unfocusedBorderColor = BorderColor
             ),
             textStyle = TextStyle(fontSize = 14.sp, color = TextPrimary),
             modifier  = Modifier.fillMaxWidth()

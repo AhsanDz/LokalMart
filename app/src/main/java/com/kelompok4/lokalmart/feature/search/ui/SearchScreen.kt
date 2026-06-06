@@ -512,21 +512,29 @@ fun FilterBottomSheet(
                     readOnly      = true,
                     trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     colors        = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor     = Color(0xFF0F172A),
+                        unfocusedTextColor   = Color(0xFF0F172A),
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
                         unfocusedBorderColor = Color(0xFFE2E8F0),
                         focusedBorderColor   = Color(0xFF16A34A)
                     ),
                     textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, color = Color(0xFF0F172A)),
                     modifier  = Modifier.menuAnchor().fillMaxWidth()
                 )
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.background(Color.White)
+                ) {
                     locations.forEach { loc ->
                         DropdownMenuItem(
-                            text    = { Text(loc, fontSize = 12.sp) },
+                            text    = { Text(loc, fontSize = 12.sp, color = Color(0xFF0F172A)) },
                             onClick = { onLocationSelected(loc); expanded = false }
                         )
                     }
                     DropdownMenuItem(
-                        text    = { Text("Semua Lokasi", fontSize = 12.sp) },
+                        text    = { Text("Semua Lokasi", fontSize = 12.sp, color = Color(0xFF0F172A)) },
                         onClick = { onLocationSelected(null); expanded = false }
                     )
                 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -274,6 +275,17 @@ private fun AddAddressDialog(
             )
         },
         text = {
+            val textFieldColors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color(0xFF0F172A),
+                unfocusedTextColor = Color(0xFF0F172A),
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = GreenPrimary,
+                unfocusedBorderColor = Color(0xFFE2E8F0),
+                focusedLabelColor = GreenPrimary,
+                unfocusedLabelColor = Color(0xFF64748B)
+            )
+            val textFieldStyle = TextStyle(color = Color(0xFF0F172A), fontSize = 14.sp)
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -283,26 +295,34 @@ private fun AddAddressDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Nama Penerima") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = textFieldStyle,
+                    colors = textFieldColors
                 )
                 OutlinedTextField(
                     value = phone,
                     onValueChange = { phone = it },
                     label = { Text("Nomor Telepon") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = textFieldStyle,
+                    colors = textFieldColors
                 )
                 OutlinedTextField(
                     value = label,
                     onValueChange = { label = it },
                     label = { Text("Label Alamat (cth: Rumah, Kantor)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = textFieldStyle,
+                    colors = textFieldColors
                 )
                 OutlinedTextField(
                     value = fullAddress,
                     onValueChange = { fullAddress = it },
                     label = { Text("Alamat Lengkap") },
                     modifier = Modifier.fillMaxWidth(),
-                    maxLines = 3
+                    maxLines = 3,
+                    textStyle = textFieldStyle,
+                    colors = textFieldColors
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

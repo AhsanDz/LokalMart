@@ -191,6 +191,18 @@ class StoreRepository @Inject constructor(
             Resource.Error(e.message ?: "Gagal memperbarui status pesanan")
         }
     }
+
+    suspend fun getActiveStores(): List<Store> {
+        return try {
+            supabase.postgrest[SupabaseTables.STORES]
+                .select {
+                    filter { eq("status", "active") }
+                }
+                .decodeList<Store>()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }
 
 @Serializable

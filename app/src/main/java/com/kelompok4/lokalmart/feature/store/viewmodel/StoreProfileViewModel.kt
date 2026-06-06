@@ -102,6 +102,48 @@ class StoreProfileViewModel @Inject constructor(
     fun loadStoreProfile(storeId: String) {
         viewModelScope.launch {
             _state.value = StoreProfileState(isLoading = true)
+            
+            val isUuid = try {
+                java.util.UUID.fromString(storeId)
+                true
+            } catch (e: Exception) {
+                false
+            }
+
+            if (!isUuid) {
+                val mockStore = if (storeId == "mock-store-2") {
+                    Store(
+                        id = "mock-store-2",
+                        ownerId = "owner-2",
+                        name = "Tenun Lestari",
+                        description = "Tenun ikat dan batik tulis tradisional premium.",
+                        address = "Klojen, Malang",
+                        contactPhone = "08123456788",
+                        category = "Pakaian",
+                        status = "active",
+                        logoUrl = "https://images.unsplash.com/photo-1524295988897-b13b5b6302e6?q=80&w=300"
+                    )
+                } else {
+                    Store(
+                        id = "mock-store-1",
+                        ownerId = "owner-1",
+                        name = "Kriya Sari Craft",
+                        description = "Toko kerajinan tangan lokal berkualitas tinggi.",
+                        address = "Sukun, Malang",
+                        contactPhone = "08123456789",
+                        category = "Kerajinan",
+                        status = "active",
+                        logoUrl = "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300"
+                    )
+                }
+                _state.value = StoreProfileState(
+                    store = mockStore,
+                    products = emptyList(),
+                    isOwner = false
+                )
+                return@launch
+            }
+
             try {
                 // 1. Fetch store info
                 val store = supabase.postgrest

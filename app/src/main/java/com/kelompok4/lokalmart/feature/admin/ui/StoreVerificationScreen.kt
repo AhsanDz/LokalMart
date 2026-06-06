@@ -255,8 +255,12 @@ fun StoreVerificationScreen(
                         onValueChange = { notes = it },
                         placeholder = { Text("Tulis catatan admin di sini...", fontSize = 12.sp) },
                         modifier = Modifier.fillMaxWidth().height(80.dp),
-                        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp),
+                        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp, color = Color(0xFF0F172A)),
                         colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color(0xFF0F172A),
+                            unfocusedTextColor = Color(0xFF0F172A),
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
                             focusedBorderColor = if (isApproveAction) green else red,
                             unfocusedBorderColor = borderCol
                         )

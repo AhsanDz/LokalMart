@@ -275,19 +275,29 @@ fun HomeScreen(
                             .padding(horizontal = 20.dp),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        // Mock 2 favorite stores matching Home.png
-                        FavoriteStoreCard(
-                            name = "Kriya Sari Craft",
-                            rating = "4.9",
-                            imageUrl = "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300",
-                            onClick = { onNavigateToStoreDetail("mock-store-1") }
-                        )
-                        FavoriteStoreCard(
-                            name = "Tenun Lestari",
-                            rating = "4.8",
-                            imageUrl = "https://images.unsplash.com/photo-1524295988897-b13b5b6302e6?q=80&w=300",
-                            onClick = { onNavigateToStoreDetail("mock-store-2") }
-                        )
+                        if (homeState.favoriteStores.isNotEmpty()) {
+                            homeState.favoriteStores.forEach { store ->
+                                FavoriteStoreCard(
+                                    name = store.name,
+                                    rating = "4.8",
+                                    imageUrl = store.logoUrl ?: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300",
+                                    onClick = { onNavigateToStoreDetail(store.id) }
+                                )
+                            }
+                        } else {
+                            FavoriteStoreCard(
+                                name = "Kriya Sari Craft",
+                                rating = "4.9",
+                                imageUrl = "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300",
+                                onClick = { onNavigateToStoreDetail("mock-store-1") }
+                            )
+                            FavoriteStoreCard(
+                                name = "Tenun Lestari",
+                                rating = "4.8",
+                                imageUrl = "https://images.unsplash.com/photo-1524295988897-b13b5b6302e6?q=80&w=300",
+                                onClick = { onNavigateToStoreDetail("mock-store-2") }
+                            )
+                        }
                     }
 
                     Spacer(Modifier.height(24.dp))

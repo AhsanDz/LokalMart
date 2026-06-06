@@ -219,6 +219,10 @@ fun EditProfileScreen(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color(0xFF0F172A),
+                            unfocusedTextColor = Color(0xFF0F172A),
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
                             focusedBorderColor = Green600,
                             unfocusedBorderColor = Color(0xFFE2E8F0)
                         ),
@@ -253,6 +257,10 @@ fun EditProfileScreen(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color(0xFF0F172A),
+                            unfocusedTextColor = Color(0xFF0F172A),
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
                             focusedBorderColor = Green600,
                             unfocusedBorderColor = Color(0xFFE2E8F0)
                         ),
@@ -281,6 +289,10 @@ fun EditProfileScreen(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color(0xFF0F172A),
+                            unfocusedTextColor = Color(0xFF0F172A),
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
                             focusedBorderColor = Green600,
                             unfocusedBorderColor = Color(0xFFE2E8F0)
                         ),
@@ -345,6 +357,10 @@ fun EditProfileScreen(
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.weight(1f),
                             colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color(0xFF0F172A),
+                                unfocusedTextColor = Color(0xFF0F172A),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
                                 focusedBorderColor = Green600,
                                 unfocusedBorderColor = Color(0xFFE2E8F0)
                             ),

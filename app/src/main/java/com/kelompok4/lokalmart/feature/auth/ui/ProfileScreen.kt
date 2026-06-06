@@ -245,6 +245,9 @@ fun ProfileScreen(
                                             if (user.role == UserRole.SELLER) {
                                                 RoleBadge(text = "SELLER")
                                             }
+                                            if (user.role == "admin"){
+                                                RoleBadge(text = "ADMIN")
+                                            }
                                         }
                                     }
                                 }

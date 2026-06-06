@@ -21,6 +21,7 @@ data class HomeState(
     val isLoading: Boolean = false,
     val categories: List<Category> = emptyList(),
     val products: List<Product> = emptyList(),
+    val favoriteStores: List<Store> = emptyList(),
     val userName: String = "Pengguna",
     val error: String? = null
 )
@@ -77,6 +78,8 @@ class ProductViewModel @Inject constructor(
             val rawName = currentUser?.fullName ?: "Pengguna"
             val userName = rawName.split(" ").firstOrNull() ?: rawName
 
+            val activeStores = storeRepository.getActiveStores()
+
             // 1. Fetch categories
             productRepository.getCategories().collect { catResource ->
                 when (catResource) {
@@ -90,12 +93,14 @@ class ProductViewModel @Inject constructor(
                                     _homeState.value = HomeState(
                                         categories = categories,
                                         products = prodResource.data,
+                                        favoriteStores = activeStores,
                                         userName = userName
                                     )
                                 }
                                 is Resource.Error -> {
                                     _homeState.value = HomeState(
                                         categories = categories,
+                                        favoriteStores = activeStores,
                                         error = prodResource.message,
                                         userName = userName
                                     )
@@ -105,7 +110,11 @@ class ProductViewModel @Inject constructor(
                         }
                     }
                     is Resource.Error -> {
-                        _homeState.value = HomeState(error = catResource.message, userName = userName)
+                        _homeState.value = HomeState(
+                            error = catResource.message, 
+                            favoriteStores = activeStores,
+                            userName = userName
+                        )
                     }
                     is Resource.Loading -> { /* Handled initially */ }
                 }
