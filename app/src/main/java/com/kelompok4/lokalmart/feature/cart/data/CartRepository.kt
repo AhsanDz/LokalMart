@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -134,6 +136,21 @@ class CartRepository @Inject constructor(
             val userId = currentUserId()
                 ?: return Resource.Error("Belum login")
 
+            // Cek stok produk terlebih dahulu
+            val product = supabase.postgrest["products"]
+                .select {
+                    filter { eq("id", productId) }
+                }
+                .decodeSingleOrNull<CartProductDto>()
+
+            if (product == null) {
+                return Resource.Error("Produk tidak ditemukan")
+            }
+
+            if (product.stock <= 0 || !product.isActive) {
+                return Resource.Error("Stok produk habis!")
+            }
+
             // Cek apakah produk sudah ada di keranjang
             val existing = supabase.postgrest["carts"]
                 .select {
@@ -146,21 +163,29 @@ class CartRepository @Inject constructor(
                 .firstOrNull()
 
             if (existing != null) {
+                val newQty = existing.quantity + quantity
+                if (newQty > product.stock) {
+                    return Resource.Error("Jumlah di keranjang melebihi stok yang tersedia (${product.stock} pcs)!")
+                }
                 // Update quantity
                 supabase.postgrest["carts"]
-                    .update(mapOf("quantity" to existing.quantity + quantity)) {
+                    .update({
+                        set("quantity", newQty)
+                    }) {
                         filter { eq("id", existing.id) }
                     }
             } else {
+                if (quantity > product.stock) {
+                    return Resource.Error("Jumlah melebihi stok yang tersedia (${product.stock} pcs)!")
+                }
                 // Insert baru
+                val cartInsert = buildJsonObject {
+                    put("user_id", userId)
+                    put("product_id", productId)
+                    put("quantity", quantity)
+                }
                 supabase.postgrest["carts"]
-                    .insert(
-                        mapOf(
-                            "user_id"    to userId,
-                            "product_id" to productId,
-                            "quantity"   to quantity,
-                        )
-                    )
+                    .insert(cartInsert)
             }
 
             Resource.Success(Unit)

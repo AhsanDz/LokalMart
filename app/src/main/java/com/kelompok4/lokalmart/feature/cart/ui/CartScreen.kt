@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kelompok4.lokalmart.feature.catalog.ui.BuyerBottomNavigation
 import com.kelompok4.lokalmart.feature.cart.data.CartItem
 import com.kelompok4.lokalmart.feature.cart.viewmodel.CartViewModel
 import com.kelompok4.lokalmart.feature.cart.viewmodel.itemsByStore
@@ -23,8 +24,12 @@ import com.kelompok4.lokalmart.feature.cart.viewmodel.selectedItems
 
 @Composable
 fun CartScreen(
-    onCheckoutClick: () -> Unit,
+    onCheckoutClick: (String) -> Unit,
     onNavigateBack: () -> Unit,
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {},
+    onNavigateToOrders: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
     viewModel: CartViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -40,13 +45,25 @@ fun CartScreen(
 
     Scaffold(
         containerColor = Color.White,
-        snackbarHost   = { SnackbarHost(snackbarHostState) }
+        snackbarHost   = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            BuyerBottomNavigation(
+                activeTab = "Keranjang",
+                onTabClick = { tab ->
+                    when (tab) {
+                        "Beranda" -> onNavigateToHome()
+                        "Cari" -> onNavigateToSearch()
+                        "Pesanan" -> onNavigateToOrders()
+                        "Profil" -> onNavigateToProfile()
+                    }
+                }
+            )
+        }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .statusBarsPadding()
         ) {
             // ── Top Bar ───────────────────────────────────────────────────────
             CartTopBar(
@@ -75,7 +92,8 @@ fun CartScreen(
                         isEditMode    = uiState.isEditMode,
                         onIncrement   = viewModel::increment,
                         onDecrement   = viewModel::decrement,
-                        onToggleSelect = viewModel::toggleItemSelection
+                        onToggleSelect = viewModel::toggleItemSelection,
+                        onToggleStoreSelect = viewModel::toggleStoreSelection
                     )
                 }
             }
@@ -92,7 +110,10 @@ fun CartScreen(
                     CartBottomBar(
                         totalItems  = uiState.totalItems,
                         totalPrice  = uiState.totalPrice,
-                        onCheckout  = onCheckoutClick
+                        onCheckout  = {
+                            val storeId = uiState.selectedItems.firstOrNull()?.storeId ?: ""
+                            onCheckoutClick(storeId)
+                        }
                     )
                 }
             }
@@ -185,7 +206,8 @@ private fun CartItemsList(
     isEditMode: Boolean,
     onIncrement: (String) -> Unit,
     onDecrement: (String) -> Unit,
-    onToggleSelect: (String) -> Unit
+    onToggleSelect: (String) -> Unit,
+    onToggleStoreSelect: (String) -> Unit
 ) {
     LazyColumn(
         contentPadding      = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -195,7 +217,13 @@ private fun CartItemsList(
         itemsByStore.forEach { (storeName, storeItems) ->
             // Header toko
             item {
-                StoreHeader(storeName = storeName, isActive = storeItems.first().isStoreActive)
+                val allSelected = storeItems.all { it.isSelected }
+                StoreHeader(
+                    storeName = storeName,
+                    isActive = storeItems.first().isStoreActive,
+                    isSelected = allSelected,
+                    onToggleSelect = { onToggleStoreSelect(storeName) }
+                )
             }
             // Item-item per toko
             items(storeItems, key = { it.cartId }) { item ->
@@ -213,11 +241,31 @@ private fun CartItemsList(
 }
 
 @Composable
-private fun StoreHeader(storeName: String, isActive: Boolean) {
+private fun StoreHeader(
+    storeName: String,
+    isActive: Boolean,
+    isSelected: Boolean,
+    onToggleSelect: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier          = Modifier.fillMaxWidth().padding(vertical = 8.dp)
     ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(22.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(if (isSelected) Color(0xFF16A34A) else Color.White)
+                .border(2.dp, if (isSelected) Color(0xFF16A34A) else Color(0xFFE2E8F0), RoundedCornerShape(6.dp))
+                .clickable(onClick = onToggleSelect)
+        ) {
+            if (isSelected) {
+                Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+            }
+        }
+        Spacer(Modifier.width(10.dp))
+
         Icon(
             Icons.Default.Store,
             contentDescription = null,
@@ -251,8 +299,8 @@ private fun CartItemCard(
     onDecrement: () -> Unit,
     onToggleSelect: () -> Unit
 ) {
-    val borderColor = if (isEditMode && item.isSelected) Color(0xFF16A34A) else Color(0xFFE2E8F0)
-    val bgColor     = if (isEditMode && item.isSelected) Color(0xFFF0FDF4) else Color.White
+    val borderColor = if (item.isSelected) Color(0xFF16A34A) else Color(0xFFE2E8F0)
+    val bgColor     = if (item.isSelected) Color(0xFFF0FDF4) else Color.White
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -261,26 +309,24 @@ private fun CartItemCard(
             .clip(RoundedCornerShape(14.dp))
             .background(bgColor)
             .border(1.dp, borderColor, RoundedCornerShape(14.dp))
-            .clickable(enabled = isEditMode, onClick = onToggleSelect)
+            .clickable(onClick = onToggleSelect)
             .padding(11.dp)
     ) {
-        // Checkbox (hanya di edit mode)
-        if (isEditMode) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(22.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(if (item.isSelected) Color(0xFF16A34A) else Color.White)
-                    .border(2.dp, if (item.isSelected) Color(0xFF16A34A) else Color(0xFFE2E8F0), RoundedCornerShape(6.dp))
-                    .clickable(onClick = onToggleSelect)
-            ) {
-                if (item.isSelected) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
-                }
+        // Checkbox (selalu ditampilkan)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(22.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(if (item.isSelected) Color(0xFF16A34A) else Color.White)
+                .border(2.dp, if (item.isSelected) Color(0xFF16A34A) else Color(0xFFE2E8F0), RoundedCornerShape(6.dp))
+                .clickable(onClick = onToggleSelect)
+        ) {
+            if (item.isSelected) {
+                Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
             }
-            Spacer(Modifier.width(10.dp))
         }
+        Spacer(Modifier.width(10.dp))
 
         // Foto produk
         Box(
@@ -290,8 +336,16 @@ private fun CartItemCard(
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color(0xFFDCFCE7))
         ) {
-            Icon(Icons.Default.Image, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(28.dp))
-            // TODO: AsyncImage(model = item.imageUrl) saat gambar siap
+            if (!item.imageUrl.isNullOrBlank()) {
+                coil.compose.AsyncImage(
+                    model = item.imageUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+            } else {
+                Icon(Icons.Default.Image, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(28.dp))
+            }
         }
 
         Spacer(Modifier.width(8.dp))

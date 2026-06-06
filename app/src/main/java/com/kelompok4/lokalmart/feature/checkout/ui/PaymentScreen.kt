@@ -15,6 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.kelompok4.lokalmart.feature.checkout.viewmodel.OrderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,9 +24,14 @@ fun PaymentScreen(
     navController: NavController,
     orderId: String,
     method: String,
-    amount: Double
+    amount: Double,
+    viewModel: OrderViewModel = hiltViewModel()
 ) {
     val green = Color(0xFF2DB87C)
+
+    LaunchedEffect(orderId) {
+        viewModel.processPayment(orderId)
+    }
 
     Scaffold(
         topBar = {

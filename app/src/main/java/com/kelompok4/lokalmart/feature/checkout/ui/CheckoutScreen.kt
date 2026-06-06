@@ -27,10 +27,7 @@ import com.kelompok4.lokalmart.feature.checkout.viewmodel.CheckoutViewModel
 @Composable
 fun CheckoutScreen(
     navController: NavController,
-    buyerId: String,
     storeId: String,
-    items: List<OrderItem>,
-    totalPrice: Double,
     viewModel: CheckoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -42,10 +39,17 @@ fun CheckoutScreen(
     val divider     = Color(0xFFCBD5E1)
     val greenBg     = Color(0xFFDCFCE7)
 
+    LaunchedEffect(storeId) {
+        viewModel.loadCheckoutDetails(storeId)
+    }
+
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            navController.navigate("orders") {
-                popUpTo("checkout") { inclusive = true }
+            val orderId = uiState.orderId ?: ""
+            val method = uiState.selectedPaymentMethod
+            val amount = uiState.totalPrice
+            navController.navigate("payment/$orderId/$method/$amount") {
+                popUpTo("checkout/$storeId") { inclusive = true }
             }
         }
     }
@@ -93,12 +97,7 @@ fun CheckoutScreen(
                 ) {
                     Button(
                         onClick = {
-                            viewModel.placeOrder(
-                                buyerId,
-                                storeId,
-                                items,
-                                totalPrice
-                            )
+                            viewModel.placeOrder(storeId)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -107,7 +106,7 @@ fun CheckoutScreen(
                             containerColor = green
                         ),
                         shape = RoundedCornerShape(12.dp),
-                        enabled = !uiState.isLoading
+                        enabled = !uiState.isLoading && uiState.items.isNotEmpty()
                     ) {
                         if (uiState.isLoading) {
                             CircularProgressIndicator(
@@ -116,7 +115,7 @@ fun CheckoutScreen(
                             )
                         } else {
                             Text(
-                                text = "Bayar Rp ${"%,.0f".format(totalPrice).replace(",", ".")}",
+                                text = "Bayar Rp ${"%,.0f".format(uiState.totalPrice).replace(",", ".")}",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -161,13 +160,18 @@ fun CheckoutScreen(
                         Spacer(modifier = Modifier.height(10.dp))
                         HorizontalDivider(color = divider)
                         Spacer(modifier = Modifier.height(10.dp))
+                        val addr = uiState.selectedAddress
+                        val nameStr = addr?.name ?: "Sari Wulandari"
+                        val phoneStr = addr?.phone ?: "0812-3456-7890"
+                        val fullAddrStr = addr?.fullAddress ?: "Jl. Bunga Kana 12B, Lowokwaru, Kota Malang, Jawa Timur 65141"
+                        val labelStr = addr?.label ?: "Rumah"
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                "Sari Wulandari · 0812-3456-7890",
+                                "$nameStr · $phoneStr",
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp,
                                 color = textPrimary
@@ -177,12 +181,14 @@ fun CheckoutScreen(
                                 color = green,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.clickable { }
+                                modifier = Modifier.clickable {
+                                    navController.navigate("saved_addresses?isSelectionMode=true")
+                                }
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            "Jl. Bunga Kana 12B, Lowokwaru, Kota Malang, Jawa Timur 65141",
+                            fullAddrStr,
                             fontSize = 13.sp,
                             color = textMuted,
                             lineHeight = 18.sp
@@ -193,7 +199,7 @@ fun CheckoutScreen(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                "Rumah",
+                                labelStr,
                                 fontSize = 11.sp,
                                 color = textMuted,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -218,7 +224,7 @@ fun CheckoutScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            items.forEachIndexed { index, item ->
+                            uiState.items.forEachIndexed { index, item ->
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -227,19 +233,19 @@ fun CheckoutScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        "${item.productId} ×${item.quantity}",
+                                        "${item.productName} ×${item.quantity}",
                                         fontSize = 13.sp,
                                         modifier = Modifier.weight(1f),
                                         color = textPrimary
                                     )
                                     Text(
-                                        "Rp ${"%,.0f".format(item.priceAtOrder).replace(",", ".")}",
+                                        "Rp ${"%,.0f".format(item.productPrice * item.quantity).replace(",", ".")}",
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = textPrimary
                                     )
                                 }
-                                if (index < items.lastIndex) {
+                                if (index < uiState.items.lastIndex) {
                                     HorizontalDivider(color = divider)
                                 }
                             }
@@ -249,73 +255,139 @@ fun CheckoutScreen(
 
                 // ── Metode Pembayaran ──────────────────────────────────
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🏦", fontSize = 18.sp)
-                        Spacer(modifier = Modifier.width(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🏦", fontSize = 18.sp)
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                "Metode pembayaran",
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 16.sp,
+                                color = textPrimary
+                            )
+                        }
                         Text(
-                            "Metode pembayaran",
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 16.sp,
-                            color = textPrimary
+                            "Ubah",
+                            color = green,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.clickable {
+                                navController.navigate("payment_methods?isSelectionMode=true")
+                            }
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    val methods = listOf(
-                        Triple("qris", "QRIS", "QRIS — Semua e-wallet"),
-                        Triple("gopay", "GP", "GoPay"),
-                        Triple("bank_transfer", "BCA", "Transfer Bank")
-                    )
+                    val selectedDto = uiState.selectedPaymentMethodDto
+                    val label = when (uiState.selectedPaymentMethod) {
+                        "qris" -> "QRIS"
+                        "gopay" -> "GP"
+                        else -> "BANK"
+                    }
+                    val name = selectedDto?.name ?: when (uiState.selectedPaymentMethod) {
+                        "qris" -> "QRIS"
+                        "gopay" -> "GoPay"
+                        else -> "Transfer Bank"
+                    }
+                    val details = selectedDto?.details ?: when (uiState.selectedPaymentMethod) {
+                        "qris" -> "QRIS — Semua e-wallet"
+                        "gopay" -> "0812-****-7890"
+                        else -> "Transfer Bank BCA"
+                    }
 
-                    methods.forEach { (id, label, name) ->
-                        val selected = uiState.selectedPaymentMethod == id
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 5.dp)
-                                .border(
-                                    width = if (selected) 2.dp else 1.dp,
-                                    color = if (selected) green else divider,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                                .background(
-                                    color = if (selected) greenBg else Color.White,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                                .clickable { viewModel.setPaymentMethod(id) }
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(width = 1.dp, color = divider, shape = RoundedCornerShape(10.dp))
+                            .background(color = Color.White, shape = RoundedCornerShape(10.dp))
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            color = when (uiState.selectedPaymentMethod) {
+                                "qris"  -> green
+                                "gopay" -> Color(0xFF00AED6)
+                                else    -> Color(0xFF003087)
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.size(40.dp)
                         ) {
-                            Surface(
-                                color = when (id) {
-                                    "qris"  -> green
-                                    "gopay" -> Color(0xFF00AED6)
-                                    else    -> Color(0xFF003087)
-                                },
-                                shape = RoundedCornerShape(8.dp),
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        label,
-                                        color = Color.White,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    label,
+                                    color = Color.White,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
-                            Spacer(modifier = Modifier.width(12.dp))
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 name,
-                                modifier = Modifier.weight(1f),
                                 fontSize = 14.sp,
                                 color = textPrimary,
-                                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+                                fontWeight = FontWeight.Bold
                             )
-                            RadioButton(
-                                selected = selected,
-                                onClick = { viewModel.setPaymentMethod(id) },
-                                colors = RadioButtonDefaults.colors(selectedColor = green)
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                details,
+                                fontSize = 12.sp,
+                                color = textMuted
+                            )
+                        }
+                    }
+                }
+
+                // ── Ringkasan Pembayaran ───────────────────────────────
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Subtotal", fontSize = 13.sp, color = textMuted)
+                            Text("Rp ${"%,.0f".format(uiState.totalPrice).replace(",", ".")}", fontSize = 13.sp, color = textPrimary, fontWeight = FontWeight.SemiBold)
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Ongkos kirim", fontSize = 13.sp, color = textMuted)
+                            Text("Rp 8.000", fontSize = 13.sp, color = textPrimary, fontWeight = FontWeight.SemiBold)
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Diskon GRATIS ONGKIR", fontSize = 13.sp, color = green)
+                            Text("-Rp 8.000", fontSize = 13.sp, color = green, fontWeight = FontWeight.SemiBold)
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HorizontalDivider(color = divider)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Total bayar", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = textPrimary)
+                            Text(
+                                "Rp ${"%,.0f".format(uiState.totalPrice).replace(",", ".")}",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = green
                             )
                         }
                     }

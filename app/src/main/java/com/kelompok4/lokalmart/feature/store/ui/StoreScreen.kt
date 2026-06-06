@@ -59,6 +59,8 @@ fun StoreScreen(
     val isKategoriExpanded by vm.isKategoriExpanded.collectAsState()
     val fieldErrors        by vm.fieldErrors.collectAsState()
     val navigationEvent    by vm.navigationEvent.collectAsState()
+    val isRegistering      by vm.isRegistering.collectAsState()
+    val registerError      by vm.registerError.collectAsState()
 
     LaunchedEffect(navigationEvent) {
         when (navigationEvent) {
@@ -72,6 +74,8 @@ fun StoreScreen(
         formState          = formState,
         isKategoriExpanded = isKategoriExpanded,
         fieldErrors        = fieldErrors,
+        isRegistering      = isRegistering,
+        registerError      = registerError,
         onLogoSelected     = vm::onLogoSelected,
         onNamaChanged      = vm::onNamaUsahaChanged,
         onKategoriToggle   = vm::onKategoriToggle,
@@ -90,7 +94,9 @@ fun StoreContent(
     formState          : StoreFormModel,
     isKategoriExpanded : Boolean,
     fieldErrors        : Map<String, String>,
-    onLogoSelected     : (Uri?) -> Unit,
+    isRegistering      : Boolean,
+    registerError      : String?,
+    onLogoSelected     : (Uri?, ByteArray?) -> Unit,
     onNamaChanged      : (String) -> Unit,
     onKategoriToggle   : () -> Unit,
     onKategoriDismiss  : () -> Unit,
@@ -107,7 +113,7 @@ fun StoreContent(
         modifier = Modifier
             .fillMaxSize()
             .background(BgPage)
-            .padding(horizontal = 16.dp,)
+            .padding(horizontal = 16.dp)
     ) {
 
         Column(
@@ -175,15 +181,35 @@ fun StoreContent(
                         errorMessage = fieldErrors["nomorWhatsApp"]
                     )
 
+                    if (registerError != null) {
+                        Text(
+                            text = registerError,
+                            color = ErrorColor,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+                        )
+                    }
+
                     StoreBottomBar(
                         onKembali = onKembali,
-                        onLanjut  = onLanjut
+                        onLanjut  = onLanjut,
+                        enabled   = !isRegistering
                     )
                 }
             }
         }
 
-
+        if (isRegistering) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = GreenPrimary)
+            }
+        }
     }
 }
 
@@ -256,12 +282,22 @@ private fun StoreInfoBanner() {
 @Composable
 private fun StoreLogoSection(
     logoUri        : Uri?,
-    onLogoSelected : (Uri?) -> Unit
+    onLogoSelected : (Uri?, ByteArray?) -> Unit
 ) {
     val context  = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
-    ) { uri -> onLogoSelected(uri) }
+    ) { uri ->
+        if (uri != null) {
+            try {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val bytes = inputStream?.readBytes()
+                onLogoSelected(uri, bytes)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(
@@ -478,9 +514,9 @@ private fun StoreDeskripsiField(
 private fun StoreBottomBar(
     modifier  : Modifier = Modifier,
     onKembali : () -> Unit,
-    onLanjut  : () -> Unit
+    onLanjut  : () -> Unit,
+    enabled   : Boolean = true
 ) {
-    // Surface dibuang, langsung pakai Row dengan modifier bawaan dari luar
     Row(
         modifier              = modifier
             .fillMaxWidth()
@@ -490,6 +526,7 @@ private fun StoreBottomBar(
     ) {
         OutlinedButton(
             onClick        = onKembali,
+            enabled        = enabled,
             shape          = RoundedCornerShape(50.dp),
             border         = androidx.compose.foundation.BorderStroke(1.dp, BorderColor),
             colors         = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary),
@@ -505,6 +542,7 @@ private fun StoreBottomBar(
 
         Button(
             onClick        = onLanjut,
+            enabled        = enabled,
             shape          = RoundedCornerShape(50.dp),
             colors         = ButtonDefaults.buttonColors(
                 containerColor = GreenPrimary,
@@ -543,7 +581,9 @@ private fun StoreScreenPreview() {
             ),
             isKategoriExpanded = false,
             fieldErrors        = emptyMap(),
-            onLogoSelected     = {},
+            isRegistering      = false,
+            registerError      = null,
+            onLogoSelected     = { _, _ -> },
             onNamaChanged      = {},
             onKategoriToggle   = {},
             onKategoriDismiss  = {},
